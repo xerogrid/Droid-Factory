@@ -49,6 +49,8 @@ void loop() {
 
     // Turn on the blue LED when motion is detected
     digitalWrite(blueLedPin, HIGH);
+    // Turn off the red LED when motion is detected
+    digitalWrite(redLedPin, LOW);
 
     // Randomly move the vertical servo
     int randomInterval = random(1000, 5000);  // Get a random interval between 1 and 5 seconds
