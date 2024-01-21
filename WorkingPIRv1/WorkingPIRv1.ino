@@ -8,6 +8,9 @@ Servo horizontalServo;
 const int verticalPin = 9;
 const int horizontalPin = 10;
 const int pirPin = 2;
+const int redLedPin = 3;
+const int blueLedPin = 4;
+
 
 // Define home positions
 const int verticalHomePosition = 90;
@@ -16,6 +19,11 @@ const int horizontalHomePosition = 90;
 void setup() {
   // Configure pin modes
   pinMode(pirPin, INPUT);
+  pinMode(redLedPin, OUTPUT);
+  pinMode(blueLedPin, OUTPUT);
+
+  digitalWrite(redLedPin, LOW);
+  digitalWrite(blueLedPin, LOW);
 
   // Attach servos to pins
   verticalServo.attach(verticalPin);
@@ -38,6 +46,9 @@ void loop() {
 
   if (motion == HIGH) {
     Serial.println("Motion detected!");
+
+    // Turn on the blue LED when motion is detected
+    digitalWrite(blueLedPin, HIGH);
 
     // Randomly move the vertical servo
     int randomInterval = random(1000, 5000);  // Get a random interval between 1 and 5 seconds
@@ -64,5 +75,12 @@ void loop() {
 
     horizontalServo.write(randomAngle);
     delay(randomInterval);
+
+    } else {
+    // Turn on the red LED when no motion is detected and no servo is running
+    digitalWrite(redLedPin, HIGH);
+    
+    // Reset blue LED to off
+    digitalWrite(blueLedPin, LOW);
   }
 }
