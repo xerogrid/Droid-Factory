@@ -1,6 +1,6 @@
 {
-    "sketch": "WorkingPIRv1\\WorkingPIRv1.ino",
+    "sketch": "Prod\\WorkingPIRv1\\WorkingPIRv1.ino",
     "configuration": "cpu=atmega328",
     "board": "arduino:avr:nano",
-    "port": "COM6"
+    "port": "COM7"
 }
