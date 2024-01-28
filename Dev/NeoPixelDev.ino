@@ -27,11 +27,15 @@ void setup() {
   digitalWrite(redLedPin, LOW);
   digitalWrite(blueLedPin, LOW);
 
+  pinMode(neopixelPin, OUTPUT);
+
   // Attach servos to pins
   verticalServo.attach(verticalPin);
   horizontalServo.attach(horizontalPin);
 
   // Run the NeoPixel Sequence
+  // Reference strandtest.ino for proper resistor/capacitor wiring
+  
 
 
   // Move servos to home position
