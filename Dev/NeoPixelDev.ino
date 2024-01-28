@@ -6,41 +6,41 @@ Servo verticalServo;
 Servo horizontalServo;
 
 // Define pin numbers
-const int verticalPin = 9;
-const int horizontalPin = 10;
-const int pirPin = 2;
-const int redLedPin = 3;
-const int blueLedPin = 4;
-const int neopixelPin = 5;
-
+const int pinVertical = 9;
+const int pinHorizontal = 10;
+const int pinPir = 2;
+const int pinRedLed = 3;
+const int pinNeopixel = 5;
 
 // Define home positions
 const int verticalHomePosition = 90;
 const int horizontalHomePosition = 90;
 
+// Define NeoPixel constants
+const int numLeds = 24;
+
+// Create NeoPixel object
+Adafruit_NeoPixel strip(numLeds, pinNeopixel, NEO_GRB + NEO_KHZ800);
+
 void setup() {
   // Configure pin modes
-  pinMode(pirPin, INPUT);
-  pinMode(redLedPin, OUTPUT);
-  pinMode(blueLedPin, OUTPUT);
+  pinMode(pinPir, INPUT);
+  pinMode(pinRedLed, OUTPUT);
 
-  digitalWrite(redLedPin, LOW);
-  digitalWrite(blueLedPin, LOW);
-
-  pinMode(neopixelPin, OUTPUT);
+  // Turn off the red LED initially
+  digitalWrite(pinRedLed, LOW);
 
   // Attach servos to pins
-  verticalServo.attach(verticalPin);
-  horizontalServo.attach(horizontalPin);
+  verticalServo.attach(pinVertical);
+  horizontalServo.attach(pinHorizontal);
 
-  // Run the NeoPixel Sequence
-  // Reference strandtest.ino for proper resistor/capacitor wiring
-  
-
-
-  // Move servos to home position
+  // Initialize servos to home position
   verticalServo.write(verticalHomePosition);
   horizontalServo.write(horizontalHomePosition);
+
+  // Initialize NeoPixel strip
+  strip.begin();
+  strip.show();  // Initialize all LEDs to off
 
   // Initialize random seed
   randomSeed(analogRead(0));
@@ -51,47 +51,57 @@ void setup() {
 
 void loop() {
   // Read motion sensor pin value
-  int motion = digitalRead(pirPin);
-
-  if (motion == HIGH) {
+  if (digitalRead(pinPir) == HIGH) {
     Serial.println("Motion detected!");
 
-    // Turn on the blue LED when motion is detected
-    digitalWrite(blueLedPin, HIGH);
     // Turn off the red LED when motion is detected
-    digitalWrite(redLedPin, LOW);
+    digitalWrite(pinRedLed, LOW);
 
-    // Randomly move the vertical servo
-    int randomInterval = random(1000, 5000);  // Get a random interval between 1 and 5 seconds
-    int randomDirection = random(0, 2);       // Get a random direction (0 or 1)
+    // Clear NeoPixel strip
+    for (int i = 0; i < numLeds; i++) {
+      strip.setPixelColor(i, strip.Color(0, 0, 0));  // Set color of each LED to off (black)
+    }
+    strip.show();  // Update LED strip with new color
 
-    if (randomDirection == 0) {
-      verticalServo.write(0);   // Move the vertical servo to the down position
-    } else {
-      verticalServo.write(180); // Move the vertical servo to the up position
+    // Sequential activation of LEDs
+    for (int i = 0; i < numLeds; i++) {
+      strip.setPixelColor(i, strip.Color(0, 255, 0));  // Set color to green (RGB)
+      strip.show();  // Update LED strip with new color
+  
+      // Check if servos are still activated
+      if (!isServoActive()) {
+        break;  // Exit loop if servos are not activated
+      }
+  
+      delay(100);  // Wait for 100 milliseconds
+
+      strip.setPixelColor(i, strip.Color(0, 0, 0));  // Set color of current LED back to off
+      strip.show();  // Update LED strip with new color
     }
 
-    delay(randomInterval);  // Wait for the random interval
+    // Wait for 2 seconds before restarting the sequence
+    delay(2000);
 
-    // Hold the position for 2 seconds
-    verticalServo.write(verticalHomePosition);  // Move the vertical servo to the middle position
-    delay(2000);                                 // Hold the position for 2 seconds
-
-    // Return to home position
-    verticalServo.write(verticalHomePosition);  // Move the vertical servo to the home position
-
-    // Randomly sweep the horizontal servo
-    randomInterval = random(2000, 5000);  // Get a random interval between 2 and 5 seconds
-    int randomAngle = random(0, 161);     // Get a random angle between 0 and 180 degrees
-
-    horizontalServo.write(randomAngle);
-    delay(randomInterval);
-
-    } else {
-    // Turn on the red LED when no motion is detected and no servo is running
-    digitalWrite(redLedPin, HIGH);
+  } else {
+    // No motion detected
     
-    // Reset blue LED to off
-    digitalWrite(blueLedPin, LOW);
+    // Set all the LEDs to red
+    for (int i = 0; i < numLeds; i++) {
+      strip.setPixelColor(i, strip.Color(255, 0, 0));  // Set color to red (RGB)
+    }
+    strip.show();  // Update LED strip with new color
+
+    // Turn on the red LED when no motion is detected and no servos are active
+    if (!isServoActive()) {
+      digitalWrite(pinRedLed, HIGH);
+    }
   }
+}
+
+// Function to check if servos are active
+bool isServoActive() {
+  int verticalPos = verticalServo.read();
+  int horizontalPos = horizontalServo.read();
+
+  return (verticalPos != verticalHomePosition || horizontalPos != horizontalHomePosition);
 }
