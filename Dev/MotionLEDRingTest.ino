@@ -23,7 +23,7 @@ void loop() {
 
 void activateLEDs() {
   for (int i = 0; i < ring.numPixels(); i++) {
-    ring.setPixelColor(i, ring.Color(255, 0, 0)); // Set the color of each LED to red (you can change the color as per your preference)
+    ring.setPixelColor(i, ring.Color(0, 255, 0)); // Set the color of each LED to red (you can change the color as per your preference)
   }
   ring.show(); // Update the ring with the new LED colors
 }
