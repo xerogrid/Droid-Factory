@@ -1,4 +1,5 @@
 #include <Servo.h>
+#include <Arduino.h>
 
 // Define servo objects
 Servo verticalServo;

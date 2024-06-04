@@ -1,6 +1,5 @@
 {
-    "sketch": "Dev\\NeoPixelDev.ino",
+    "sketch": "Prod/Version 1/WorkingPIRv1.ino",
     "configuration": "cpu=atmega328",
-    "board": "arduino:avr:nano",
-    "port": "COM6"
+    "board": "arduino:avr:nano"
 }

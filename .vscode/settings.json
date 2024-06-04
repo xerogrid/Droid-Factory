@@ -1,7 +1,0 @@
-{
-    "C_Cpp.intelliSenseEngineFallback": "enabled",
-    "files.associations": {
-        "deviceonlycommands": "c"
-    },
-    "C_Cpp.errorSquiggles": "enabled"
-}
