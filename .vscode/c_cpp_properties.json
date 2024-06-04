@@ -5,7 +5,8 @@
             "includePath": [
                 "/Users/xerogrid/Documents/**",
                 "/Applications/Arduino IDE.app/Contents/**",
-                "/Users/xerogrid/Library/Arduino15/**"
+                "/Users/xerogrid/Library/Arduino15/**",
+                "/Users/xerogrid/Documents/github/Droid-Factory/libraries"
             ],
             "defines": [],
             "macFrameworkPath": [
