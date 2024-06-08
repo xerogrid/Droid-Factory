@@ -93,10 +93,10 @@ void loop() {
 
     if (randomDirection == 0) {
       verticalServo.attach(verticalPin);
-      verticalServo.write(0);   // Move the vertical servo to the down position
+      verticalServo.write(30);   // Move the vertical servo to the down position
     } else {
       verticalServo.attach(verticalPin);
-      verticalServo.write(180); // Move the vertical servo to the up position
+      verticalServo.write(150); // Move the vertical servo to the up position
     }
 
     delay(randomInterval);  // Wait for the random interval
