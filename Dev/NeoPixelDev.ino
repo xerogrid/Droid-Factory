@@ -2,7 +2,7 @@
 #include <Servo.h>
 #include <Adafruit_NeoPixel.h>
 
-// Define servo objects
+// Define servo objects (180-degree servos)
 Servo verticalServo;
 Servo horizontalServo;
 
@@ -15,8 +15,16 @@ const int blueLedPin = 4;
 const int NeopixelPin = 5;
 
 // Define home positions
-const int verticalHomePosition = 90;
+const int verticalHomePosition = 45; // Assuming 45 is the home position for vertical
 const int horizontalHomePosition = 90;
+
+// Define vertical servo movement range
+const int verticalUpLimit = 0;   // Max up position
+const int verticalDownLimit = 90;  // Max down position (home position)
+
+// Define horizontal servo movement range
+const int horizontalLeftLimit = 30;  // Max left position
+const int horizontalRightLimit = 120; // Max right position
 
 // Create NeoPixel object
 Adafruit_NeoPixel ring = Adafruit_NeoPixel(24, NeopixelPin, NEO_GRB + NEO_KHZ800);
@@ -25,7 +33,7 @@ Adafruit_NeoPixel ring = Adafruit_NeoPixel(24, NeopixelPin, NEO_GRB + NEO_KHZ800
 void blinkRing();
 void moveServoIfNeeded(Servo &servo, int position);
 void rotateRedRing();
-void detachServosIfHome();
+void detachServos();
 void initialVerticalServoSequence();
 
 void setup() {
@@ -55,8 +63,8 @@ void setup() {
   moveServoIfNeeded(verticalServo, verticalHomePosition);
   moveServoIfNeeded(horizontalServo, horizontalHomePosition);
 
-  // Detach servos if they are at home position
-  detachServosIfHome();
+  // Detach servos to prevent ticking
+  detachServos();
 
   // Initialize random seed
   randomSeed(analogRead(0));
@@ -89,20 +97,16 @@ void loop() {
     verticalServo.attach(verticalPin);
     horizontalServo.attach(horizontalPin);
 
-    // Randomly move the vertical servo
+    // Randomly move the vertical servo up
     int randomInterval = random(1000, 5000);  // Get a random interval between 1 and 5 seconds
-    int randomDirection = random(0, 2);       // Get a random direction (0 or 1)
+    int randomVerticalPosition = random(verticalUpLimit, verticalDownLimit + 1); // Get a random position between 0 and 90 degrees
 
-    if (randomDirection == 0) {
-      moveServoIfNeeded(verticalServo, 30);   // Move the vertical servo to the down position
-    } else {
-      moveServoIfNeeded(verticalServo, 150); // Move the vertical servo to the up position
-    }
+    moveServoIfNeeded(verticalServo, randomVerticalPosition); // Move the vertical servo
 
     delay(randomInterval);  // Wait for the random interval
 
     // Hold the position for 2 seconds
-    moveServoIfNeeded(verticalServo, verticalHomePosition);  // Move the vertical servo to the middle position
+    moveServoIfNeeded(verticalServo, verticalHomePosition);  // Move the vertical servo to the home position
     delay(2000);                                 // Hold the position for 2 seconds
 
     // Return to home position
@@ -110,13 +114,13 @@ void loop() {
 
     // Randomly sweep the horizontal servo
     randomInterval = random(2000, 5000);  // Get a random interval between 2 and 5 seconds
-    int randomAngle = random(0, 161);     // Get a random angle between 0 and 180 degrees
+    int randomHorizontalPosition = random(horizontalLeftLimit, horizontalRightLimit + 1); // Get a random position between 30 and 120 degrees
 
-    moveServoIfNeeded(horizontalServo, randomAngle);
+    moveServoIfNeeded(horizontalServo, randomHorizontalPosition);
     delay(randomInterval);
 
-    // Detach servos if they are at home position
-    detachServosIfHome();
+    // Detach servos to prevent ticking
+    detachServos();
 
   } else {
     // Turn on the red LED when no motion is detected and no servo is running
@@ -176,30 +180,23 @@ void rotateRedRing() {
     ring.clear();
     ring.setPixelColor(i, ring.Color(255, 0, 0));
     ring.show();
-    delay(50);
+    delay(25);
   }
 }
 
-// Function to detach servos if they are at home position
-void detachServosIfHome() {
-  if (verticalServo.read() == verticalHomePosition) {
-    verticalServo.detach();
-  }
-  if (horizontalServo.read() == horizontalHomePosition) {
-    horizontalServo.detach();
-  }
+// Function to detach servos
+void detachServos() {
+  verticalServo.detach();
+  horizontalServo.detach();
 }
 
 // Function for the initial vertical servo sequence
 void initialVerticalServoSequence() {
   // Move the vertical servo up
-  moveServoIfNeeded(verticalServo, 150);
+  moveServoIfNeeded(verticalServo, verticalUpLimit);
   delay(2000); // Wait for 2 seconds
 
-  // Move the vertical servo down
-  moveServoIfNeeded(verticalServo, 30);
-  delay(2000); // Wait for 2 seconds
-
-  // Return the vertical servo to home position
+  // Move the vertical servo back to the home position
   moveServoIfNeeded(verticalServo, verticalHomePosition);
+  delay(2000); // Wait for 2 seconds
 }
