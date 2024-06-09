@@ -32,6 +32,7 @@ Adafruit_NeoPixel ring = Adafruit_NeoPixel(24, NeopixelPin, NEO_GRB + NEO_KHZ800
 // Function prototypes
 void blinkRing();
 void moveServoIfNeeded(Servo &servo, int position);
+void moveServoWithOscillationDamping(Servo &servo, int targetPosition);
 void rotateRedRing();
 void detachServos();
 void initialVerticalServoSequence();
@@ -116,7 +117,7 @@ void loop() {
     randomInterval = random(2000, 5000);  // Get a random interval between 2 and 5 seconds
     int randomHorizontalPosition = random(horizontalLeftLimit, horizontalRightLimit + 1); // Get a random position between 30 and 120 degrees
 
-    moveServoIfNeeded(horizontalServo, randomHorizontalPosition);
+    moveServoWithOscillationDamping(horizontalServo, randomHorizontalPosition); // Move the horizontal servo with oscillation damping
     delay(randomInterval);
 
     // Detach servos to prevent ticking
@@ -138,6 +139,24 @@ void loop() {
 void moveServoIfNeeded(Servo &servo, int position) {
   if (servo.read() != position) {
     servo.write(position);
+  }
+}
+
+// Function to move the horizontal servo with oscillation damping
+void moveServoWithOscillationDamping(Servo &servo, int targetPosition) {
+  int currentPosition = servo.read();
+  int step = (targetPosition > currentPosition) ? 1 : -1;
+
+  while (currentPosition != targetPosition) {
+    currentPosition += step;
+    servo.write(currentPosition);
+    if (abs(targetPosition - currentPosition) < 10) {
+      delay(50);  // Slow down as the servo approaches the target position
+    } else if (abs(targetPosition - currentPosition) < 20) {
+      delay(30);
+    } else {
+      delay(15);  // Default speed
+    }
   }
 }
 
