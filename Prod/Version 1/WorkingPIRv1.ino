@@ -1,8 +1,6 @@
 #include <Arduino.h>
 #include <Servo.h>
 
-#include <Servo.h>
-
 // Define servo objects
 Servo verticalServo;
 Servo horizontalServo;

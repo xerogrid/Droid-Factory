@@ -1,5 +1,0 @@
-{
-    "sketch": "Prod/Version 1/WorkingPIRv1.ino",
-    "configuration": "cpu=atmega328",
-    "board": "arduino:avr:nano"
-}
